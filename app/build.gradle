@@ -8,6 +8,7 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
 repositories {
@@ -23,6 +24,18 @@ dependencies {
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:32.1.1-jre'
+    runtimeOnly "org.openjfx:javafx-base:$javafx.version:win"
+    runtimeOnly "org.openjfx:javafx-base:$javafx.version:linux"
+    runtimeOnly "org.openjfx:javafx-base:$javafx.version:mac"
+    runtimeOnly "org.openjfx:javafx-controls:$javafx.version:win"
+    runtimeOnly "org.openjfx:javafx-controls:$javafx.version:linux"
+    runtimeOnly "org.openjfx:javafx-controls:$javafx.version:mac"
+    runtimeOnly "org.openjfx:javafx-fxml:$javafx.version:win"
+    runtimeOnly "org.openjfx:javafx-fxml:$javafx.version:linux"
+    runtimeOnly "org.openjfx:javafx-fxml:$javafx.version:mac"
+    runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:win"
+    runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:linux"
+    runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:mac"
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -30,6 +43,11 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+}
+
+javafx{
+    version = "21.0.1"
+    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.media' ]
 }
 
 application {
