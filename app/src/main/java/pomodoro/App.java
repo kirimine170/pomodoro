@@ -3,12 +3,97 @@
  */
 package pomodoro;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import javafx.scene.shape.Ellipse;
+import javafx.scene.Group;
+import javafx.stage.StageStyle;
+import javafx.scene.paint.Color;
+import javafx.scene.input.MouseButton;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.ArcType;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import java.io.File;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class App extends Application
+{
+    private double x, y;
+
+    @Override
+    public void start(Stage stage)
+    {
+
+        Group root = new Group();
+        String javaVersion = System.getProperty("java.version");
+        String javafxVersion = System.getProperty("javafx.version");
+
+        Label l = new Label("Hello, JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
+        Scene scene = new Scene(root, 512, 512, Color.TRANSPARENT);
+        //Scene scene = new Scene(root, 512, 512);
+
+        Ellipse ellipse = new Ellipse(256, 256, 256, 256);
+        ellipse.setFill(Color.WHITE);
+
+        Arc arc = new Arc(256, 256, 256, 256, 90, -270);
+        arc.setFill(Color.PURPLE);
+        arc.setType(ArcType.ROUND);
+
+        Media sound = new Media(new File("src/main/resources/yokudekimashita.mp3").toURI().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(sound);
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask()
+        {
+            public void run()
+            {
+                arc.setLength(arc.getLength() + 1);
+                if (arc.getLength() >= 0)
+                {
+                    System.out.println("time up");
+                    System.out.println(arc.getLength());
+                    timer.purge();
+                    timer.cancel();
+                    mediaPlayer.play();
+                }
+                //System.out.println("kurumichan");
+            }
+        }, 0, 1000);
+
+        root.getChildren().add(ellipse);
+        root.getChildren().add(arc);
+        root.setOnMousePressed(mouseEvent ->
+        {
+            x = mouseEvent.getSceneX();
+            y = mouseEvent.getSceneY();
+            if (mouseEvent.getButton() == MouseButton.SECONDARY)
+            {
+                timer.cancel();
+                stage.close();
+            }
+        });
+        root.setOnMouseDragged(mouseEvent ->
+        {
+            stage.setX(mouseEvent.getScreenX() - x);
+            stage.setY(mouseEvent.getScreenY() - y);
+        });
+
+        stage.setScene(scene);
+        stage.initStyle(StageStyle.TRANSPARENT);
+        stage.minWidthProperty().bind(scene.heightProperty());
+        stage.minHeightProperty().bind(scene.widthProperty());
+        stage.setAlwaysOnTop(true);
+        stage.show();
     }
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+    public static void main(String[] args)
+    {
+        launch();
     }
 }
