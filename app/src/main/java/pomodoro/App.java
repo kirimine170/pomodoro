@@ -22,6 +22,8 @@ import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import pomodoro.timer.*;
+
 public class App extends Application
 {
     private double x, y;
@@ -41,40 +43,45 @@ public class App extends Application
         Ellipse ellipse = new Ellipse(256, 256, 256, 256);
         ellipse.setFill(Color.WHITE);
 
-        Arc arc = new Arc(256, 256, 256, 256, 90, -270);
+        Arc arc = new Arc(256, 256, 256, 256, 90, -360);
         arc.setFill(Color.PURPLE);
         arc.setType(ArcType.ROUND);
 
         Media sound = new Media(new File("src/main/resources/yokudekimashita.mp3").toURI().toString());
         MediaPlayer mediaPlayer = new MediaPlayer(sound);
 
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask()
+        PomodoroTimer pomodoroTimer = new PomodoroTimer();
+        pomodoroTimer.setTimerListener(new TImerListener()
         {
-            public void run()
+            @Override
+            public void onTimerUpdate()
             {
                 arc.setLength(arc.getLength() + 1);
-                if (arc.getLength() >= 0)
+                if (arc.getLength() == 0)
                 {
-                    System.out.println("time up");
-                    System.out.println(arc.getLength());
-                    timer.purge();
-                    timer.cancel();
                     mediaPlayer.play();
+                    pomodoroTimer.stopTimer();
                 }
-                //System.out.println("kurumichan");
             }
-        }, 0, 1000);
+
+            @Override
+            public void onTimerComplete()
+            {
+                System.out.println("onTimerComplete");
+                mediaPlayer.play();
+            }
+        });
+        pomodoroTimer.startTimer();
 
         root.getChildren().add(ellipse);
         root.getChildren().add(arc);
         root.setOnMousePressed(mouseEvent ->
+
         {
             x = mouseEvent.getSceneX();
             y = mouseEvent.getSceneY();
             if (mouseEvent.getButton() == MouseButton.SECONDARY)
             {
-                timer.cancel();
                 stage.close();
             }
         });
