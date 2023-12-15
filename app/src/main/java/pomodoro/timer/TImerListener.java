@@ -1,8 +1,8 @@
 package pomodoro.timer;
 
-public interface TImerListener
+public interface TimerListener
 {
-    void onTimerUpdate();
+    void onTimerUpdate(double angle);
 
     void onTimerComplete();
 }
