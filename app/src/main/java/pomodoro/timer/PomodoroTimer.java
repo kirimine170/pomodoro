@@ -5,7 +5,7 @@ import java.util.TimerTask;
 
 public class PomodoroTimer
 {
-    private TImerListener timerListener;
+    private TimerListener timerListener;
 
     private long ONE_SECOND_IN_MILLIS = 1000;
     private long pomodoroTime = 25;//* 60;
@@ -33,20 +33,20 @@ public class PomodoroTimer
         this.pomodorosUntilLongBreak = pomodorosUntilLongBreak;
     }
 
-    public void setTimerListener(TImerListener timerListener)
+    public void setTimerListener(TimerListener timerListener)
     {
         this.timerListener = timerListener;
     }
 
     public void startTimer()
     {
-        this.timer.scheduleAtFixedRate(new TimerTask()
+        this.timer.schedule(new TimerTask()
         {
             public void run()
             {
-                timerListener.onTimerUpdate();
+                timerListener.onTimerComplete();
             }
-        }, 0, pomodoroTime * ONE_SECOND_IN_MILLIS / 360);
+        }, pomodoroTime * ONE_SECOND_IN_MILLIS);
     }
 
     public void stopTimer()
