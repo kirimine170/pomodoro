@@ -22,7 +22,10 @@ import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.checkerframework.checker.guieffect.qual.UI;
+
 import pomodoro.timer.*;
+import pomodoro.ui.*;
 
 public class App extends Application
 {
@@ -31,50 +34,52 @@ public class App extends Application
     @Override
     public void start(Stage stage)
     {
+        TimerView timerView = new TimerView();
+        Group root = timerView.getRoot();
 
-        Group root = new Group();
-        String javaVersion = System.getProperty("java.version");
-        String javafxVersion = System.getProperty("javafx.version");
-
-        Label l = new Label("Hello, JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
-        Scene scene = new Scene(root, 512, 512, Color.TRANSPARENT);
+        Scene scene = new Scene(root, 512, 512, UIConfig.DEFAULT_BACKGROUND_COLOR);
         //Scene scene = new Scene(root, 512, 512);
-
-        Ellipse ellipse = new Ellipse(256, 256, 256, 256);
-        ellipse.setFill(Color.WHITE);
-
-        Arc arc = new Arc(256, 256, 256, 256, 90, -360);
-        arc.setFill(Color.PURPLE);
-        arc.setType(ArcType.ROUND);
 
         Media sound = new Media(new File("src/main/resources/yokudekimashita.mp3").toURI().toString());
         MediaPlayer mediaPlayer = new MediaPlayer(sound);
 
-        PomodoroTimer pomodoroTimer = new PomodoroTimer();
-        pomodoroTimer.setTimerListener(new TImerListener()
+        CustomableAnimationTimer customableAnimationTimer = new CustomableAnimationTimer(25);
+        customableAnimationTimer.setTimerListener(new TimerListener()
         {
             @Override
-            public void onTimerUpdate()
+            public void onTimerUpdate(double angle)
             {
-                arc.setLength(arc.getLength() + 1);
-                if (arc.getLength() == 0)
-                {
-                    mediaPlayer.play();
-                    pomodoroTimer.stopTimer();
-                }
+                timerView.updateAngle(angle);
+            }
+
+            @Override
+            public void onTimerComplete()
+            {
+                // 何もないよ
+            }
+        });
+        customableAnimationTimer.start();
+
+        PomodoroTimer pomodoroTimer = new PomodoroTimer();
+        pomodoroTimer.setTimerListener(new TimerListener()
+        {
+            @Override
+            public void onTimerUpdate(double angle)
+            {
+                // 何もないよ
             }
 
             @Override
             public void onTimerComplete()
             {
                 System.out.println("onTimerComplete");
+                pomodoroTimer.stopTimer();
+                customableAnimationTimer.stop();
                 mediaPlayer.play();
             }
         });
         pomodoroTimer.startTimer();
 
-        root.getChildren().add(ellipse);
-        root.getChildren().add(arc);
         root.setOnMousePressed(mouseEvent ->
 
         {
@@ -92,7 +97,7 @@ public class App extends Application
         });
 
         stage.setScene(scene);
-        stage.initStyle(StageStyle.TRANSPARENT);
+        stage.initStyle(UIConfig.DEFAULT_STAGE_STYLE);
         stage.minWidthProperty().bind(scene.heightProperty());
         stage.minHeightProperty().bind(scene.widthProperty());
         stage.setAlwaysOnTop(true);
