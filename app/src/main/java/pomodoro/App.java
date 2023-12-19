@@ -43,7 +43,8 @@ public class App extends Application
         Media sound = new Media(new File("src/main/resources/yokudekimashita.mp3").toURI().toString());
         MediaPlayer mediaPlayer = new MediaPlayer(sound);
 
-        CustomableAnimationTimer customableAnimationTimer = new CustomableAnimationTimer(25);
+        PomodoroTimer pomodoroTimer = new PomodoroTimer();
+        CustomableAnimationTimer customableAnimationTimer = new CustomableAnimationTimer(pomodoroTimer);
         customableAnimationTimer.setTimerListener(new TimerListener()
         {
             @Override
@@ -58,9 +59,8 @@ public class App extends Application
                 // 何もないよ
             }
         });
-        customableAnimationTimer.start();
+        //customableAnimationTimer.start();
 
-        PomodoroTimer pomodoroTimer = new PomodoroTimer();
         pomodoroTimer.setTimerListener(new TimerListener()
         {
             @Override
@@ -72,17 +72,22 @@ public class App extends Application
             @Override
             public void onTimerComplete()
             {
-                System.out.println("onTimerComplete");
+                //System.out.println("onTimerComplete");
                 pomodoroTimer.stopTimer();
                 customableAnimationTimer.stop();
                 mediaPlayer.play();
+                pomodoroTimer.nextSession();
             }
         });
-        pomodoroTimer.startTimer();
 
         root.setOnMousePressed(mouseEvent ->
 
         {
+            if (!pomodoroTimer.isTimerRunning())
+            {
+                pomodoroTimer.startTimer();
+                customableAnimationTimer.start();
+            }
             x = mouseEvent.getSceneX();
             y = mouseEvent.getSceneY();
             if (mouseEvent.getButton() == MouseButton.SECONDARY)
