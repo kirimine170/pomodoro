@@ -73,6 +73,7 @@ public class App extends Application
             public void onTimerComplete()
             {
                 //System.out.println("onTimerComplete");
+                timerView.updateAngle(0);
                 pomodoroTimer.stopTimer();
                 customableAnimationTimer.stop();
                 mediaPlayer.play();
@@ -87,11 +88,15 @@ public class App extends Application
             {
                 pomodoroTimer.startTimer();
                 customableAnimationTimer.start();
+                mediaPlayer.stop();
+                mediaPlayer.seek(mediaPlayer.getStartTime());
             }
             x = mouseEvent.getSceneX();
             y = mouseEvent.getSceneY();
             if (mouseEvent.getButton() == MouseButton.SECONDARY)
             {
+                pomodoroTimer.stopTimer();
+                customableAnimationTimer.stop();
                 stage.close();
             }
         });
